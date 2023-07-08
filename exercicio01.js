@@ -1,21 +1,36 @@
-let limite = Number(prompt('digite o limite dos numeros'));
+let quantidadeDeAmostras = Number(prompt('quantidade de amostras'));
 let tamanho = Number(prompt('digite o tamanho do vetor'));
-let valor = Number(prompt('digite o valor que desejas encontrar'));
-let vetor = [];
-let vetorSorteado = []
+let vetorSorteado = [];
+let somaErro = 0;
+let somaTempo = 0;
+
+function Amostras(){
+    
+}
 
 function sorteiaVetor(tamanho){
-
+    let vetor = [];
+    let tempo = 0;
     let comeco = performance.now(); 
-    for (let i = 0; i < tamanho; i++) {
-        let numero = Math.floor(Math.random() * (limite+ 1));
-        vetor.push(numero);
+    let erro = 0;
+    let numero = Math.floor(Math.random() * (tamanho))+ 1;
+    vetor.push(numero);
+    let i = 1;
+    while (i < tamanho) {
+        numero = Math.floor(Math.random() * (tamanho))+ 1;
+        if (verificaExiste(numero, vetor, i)){
+            erro++;
+
+        }else{
+            vetor.push(numero);
+            i++;
+        }
     }
 
     let fim = performance.now(); 
-    let tempo = (fim - comeco); 
+    tempo = (fim - comeco); 
 
-    return {vetor: vetor, tempo: tempo}
+    return {vetor: vetor, tempo: tempo, erro: erro};
     
 }
 
@@ -26,30 +41,40 @@ function verificaExiste(valor, vetor, tamanho){
         i++;
     }
     if (i < tamanho){
-        return true
+        return true;
     }
-    return false
+    return false;
 
 }
 
-function geraVetorVerificado(tamanho, vetorGerado){
-    let vetor = [...vetorGerado];
-    let valor;
-    let i = 0;
-    while(i < tamanho){
-        valor = sorteiaVetor(tamanho);
-        if (verificaExiste(valor, vetor, i) === 0 ){
-            vetor[i] = valor;
-            i++;
-        }
+function main(){
+
+    let mediaErro = 0;
+    let mediaTempo = 0;
+
+// console.log(`quantidade de amostras: ${quantidadeDeAmostras}`)
+
+    for (let i = 0; i < quantidadeDeAmostras; i++){
+        
+        let resultado = sorteiaVetor(tamanho);
+        vetorSorteado = resultado.vetor;
+        // console.log(`---------------------------------------------------------------- ${i+1} ----------------------------------------------------------------`);
+        // console.log(`Vetor sorteado: [${resultado.vetor}]`);
+        // console.log(`Tempo necessário: ${resultado.tempo}ms`);
+        // console.log(`Tentativas: ${resultado.erro}`);
+        mediaErro = mediaErro + resultado.erro;
+        mediaTempo = mediaTempo + resultado.tempo;
+    
     }
-    return vetor;
+    
+    mediaErro = mediaErro/quantidadeDeAmostras;
+    mediaTempo = mediaTempo/quantidadeDeAmostras;
+
+    return{mediaErro: mediaErro, mediaTempo: mediaTempo};
 }
 
-let resultado = sorteiaVetor(tamanho);
-vetorSorteado = resultado.vetor;
-let verificaResultado = verificaExiste(valor, vetorSorteado, tamanho);
-
-console.log(`Vetor sorteado: [${resultado.vetor}]`);
-console.log(`Tempo necessário: ${resultado.tempo}ms`);
-console.log(`valores verificados: ${geraVetorVerificado(tamanho, resultado.vetor)}`);
+let resultadoMedia = main()
+// console.log(`--------------------------------------------------------------------------------------------------------------------------------`);
+console.log(`quantidade de amostras: ${quantidadeDeAmostras}`)
+console.log(`Média de erros: ${resultadoMedia.mediaErro}`);
+console.log(`Média de tempo: ${resultadoMedia.mediaTempo}`);
